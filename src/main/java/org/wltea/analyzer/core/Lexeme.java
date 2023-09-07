@@ -279,6 +279,19 @@ public class Lexeme implements Comparable<Lexeme>{
 		strbuf.append(this.getLexemeTypeString());
 		return strbuf.toString();
 	}
-	
+
+	/**
+	 * 校验词元是否交集
+	 *
+	 * @param lexeme
+	 * @return
+	 */
+	public boolean checkCross(Lexeme lexeme) {
+		if (lexeme == null) {
+			return false;
+		}
+		return (lexeme.getBegin() >= this.begin && lexeme.getBegin() < this.begin + this.length)
+				|| (this.begin >= lexeme.getBegin() && this.begin < lexeme.getBegin() + lexeme.getLength());
+	}
 
 }

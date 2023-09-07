@@ -24,16 +24,12 @@
  */
 package org.wltea.analyzer.core;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-
 import org.wltea.analyzer.cfg.Configuration;
 import org.wltea.analyzer.dic.Dictionary;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.util.*;
 
 /**
  * 
@@ -41,7 +37,7 @@ import org.wltea.analyzer.dic.Dictionary;
  * 
  */
 class AnalyzeContext {
-	
+
 	//默认缓冲区大小
 	private static final int BUFF_SIZE = 4096;
 	//缓冲区耗尽的临界值
@@ -265,13 +261,21 @@ class AnalyzeContext {
 			if(path != null){
 				//输出LexemePath中的lexeme到results集合
 				Lexeme l = path.pollFirst();
+				Lexeme pre;
 				while(l != null){
 					this.results.add(l);
 					
 					//将index移至lexeme后
-					index = l.getBegin() + l.getLength();					
+					index = l.getBegin() + l.getLength();
+					pre = l;
 					l = path.pollFirst();
 					if(l != null){
+						if (pre.checkCross(l)) {
+							// 增加特性：输出相邻相交分词的前一个分词的非相交部分的单词
+							for (int i = pre.getBegin(); i < l.getBegin(); i++) {
+								this.outputSingleCJK(i);
+							}
+						}
 						//输出path内部，词元间遗漏的单字
 						for(;index < l.getBegin();index++){
 							this.outputSingleCJK(index);
